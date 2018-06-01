@@ -97,7 +97,7 @@ public:
 			visible(true),
 			chat(true),
 			crownsolo(false),
-			color(0xFF7F00),
+			color(0x242464),
 			crown({NULL, NULL, {50, 50}, {50, 50}, 0}){};
 		nlohmann::json get_json(std::string, bool);
 		nlohmann::json get_chatlog_json();
