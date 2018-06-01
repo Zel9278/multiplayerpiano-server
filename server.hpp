@@ -6,6 +6,7 @@
 #include <set>
 #include <nlohmann/json.hpp>
 #include <sys/time.h>
+#include <sys/stat.h>
 #include <fstream>
 #include <sstream>
 #include "limiter.hpp"
