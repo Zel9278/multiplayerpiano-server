@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include "limiter.hpp"
+#include "crossfuncs.hpp"
 
 
 /* Define VANILLA_SERVER if you don't want custom network messages, like non-JSON note data
@@ -46,11 +47,7 @@ public:
 			std::string name;
 		};
 		Database(const std::string& dir) : dir(dir){
-#ifndef __WIN32
-			mkdir(dir.c_str(), 0700);
-#else
-			CreateDirectory(dir.c_str(), nullptr);
-#endif
+			makedir(dir);
 		};
 		pinfo_t get_usrinfo(uint32_t);
 		void set_usrinfo(uint32_t, pinfo_t);
@@ -85,7 +82,7 @@ public:
 			Client* oldowner;
 			std::array<float,2> startpos;
 			std::array<float,2> endpos;
-			long int time;
+			int64_t time;
 		};
 		bool lobby, visible, chat, crownsolo;
 		uint32_t color;
