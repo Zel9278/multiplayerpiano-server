@@ -397,7 +397,7 @@ nlohmann::json server::genusr(uWS::WebSocket<uWS::SERVER> * s){
 }
 
 void server::run(){
-	if (!h.listen("0.0.0.0", port, uWS::TLS::createContext("/etc/letsencrypt/live/ts.terrium.net/cert.pem", "/etc/letsencrypt/live/ts.terrium.net/privkey.pem"))) {
+	if (!h.listen("0.0.0.0", port, uS::TLS::createContext("/etc/letsencrypt/live/ts.terrium.net/cert.pem", "/etc/letsencrypt/live/ts.terrium.net/privkey.pem"))) {
 		std::cerr << "Can't listen to port: " << port << std::endl;
 		return;
 	}
