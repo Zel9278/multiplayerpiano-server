@@ -189,7 +189,7 @@ void server::msg::chown(server* sv, json& j, uWS::WebSocket<uWS::SERVER> * s){
 		|| ssearch->second->is_owner(newowner))
 			return;
 	if(js_date_now() - ssearch->second->get_crowninfo().time > 15000 ||
-	   ssearch->second->get_crowninfo().oldowner == newowner){
+	  ssearch->second->get_crowninfo().oldowner == newowner){
 		ssearch->second->set_owner(newowner);
 		json res = json::array();
 		res[0] = ssearch->second->get_json(ssearch->first, true);
@@ -218,10 +218,12 @@ void server::msg::userset(server* sv, json& j, uWS::WebSocket<uWS::SERVER> * s){
 
 			if (j["set"]["name"].is_string()) {
 				std::string newn = j["set"]["name"].get<std::string>();
-				if(getUTF8strlen(newn) <= 40){
+				/*if(getUTF8strlen(newn) <= 40){
 					search->second.user->set_name(newn);
 					updated = true;
-				}
+				}*/
+				search->second.user->set_name(newn);
+					updated = true;
 			}
 
 			if (j["set"]["color"].is_string()) {
@@ -278,10 +280,12 @@ void server::msg::adminmsg(server* sv, json& j, uWS::WebSocket<uWS::SERVER> * s)
 }
 
 void server::msg::kickban(server* sv, json& j, uWS::WebSocket<uWS::SERVER> * s){
-	return;
+	auto search = sv->clients.find(*(std::string *) s->getUserData());
+	auto ssearch = sv->rooms.find(search->second.sockets.at(s));
+	if(ssearch == sv->rooms.end()) return;
+	std::string rn = "lobby";
+	ssearch->second->kick_usr(s, search->second, rn);
 }
-
-
 
 void server::msg::lsl(server* sv, json& j, uWS::WebSocket<uWS::SERVER> * s){
 	sv->roomlist_watchers.erase(s);

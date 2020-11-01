@@ -25,7 +25,7 @@ public:
 	limiter::Simple name;
 	limiter::Simple room;
 	limiter::Simple rmls;
-	ClientLimit() : name(2), room(1.6f), rmls(.8f){};
+	ClientLimit() : name(0), room(1.6f), rmls(.8f){};
 };
 
 class RoomLimit {

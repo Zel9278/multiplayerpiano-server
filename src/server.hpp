@@ -13,6 +13,7 @@
 #include "crossfuncs.hpp"
 
 uint32_t getDefaultRoomColor();
+uint32_t getDefaultRoomColor2();
 
 /* Define VANILLA_SERVER if you don't want custom network messages, like non-JSON note data
  * #define VANILLA_SERVER
@@ -87,6 +88,7 @@ public:
 		};
 		bool lobby, visible, chat, crownsolo;
 		uint32_t color;
+		uint32_t color2;
 		oinfo_t crown;
 		std::unordered_map<Client*, clinfo_t> ids;
 		std::deque<nlohmann::json> chatlog;
@@ -97,6 +99,7 @@ public:
 			chat(true),
 			crownsolo(false),
 			color(getDefaultRoomColor()),
+			color2(getDefaultRoomColor2()),
 			crown({NULL, NULL, {50, 50}, {50, 50}, 0}){};
 		nlohmann::json get_json(std::string, bool);
 		nlohmann::json get_chatlog_json();

@@ -44,17 +44,16 @@ g: preconditions $(TARGET)
 
 preconditions:
 	mkdir -p build
+	mkdir -p server-bin
 
 $(TARGET): $(OBJ_FILES) $(LIB_FILES)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	$(CXX) $(LDFLAGS) -o ./server-bin/$@ $^ $(LDLIBS)
 
 build/%.o: src/%.cpp
 	$(CXX) $(CPPFLAGS) -c -o $@ $<
 
-
 $(UWS)/libuWS.a:
 	$(MAKE) -C $(UWS) -f ../uWebSockets.mk
-
 
 clean:
 	- $(RM) $(TARGET) $(OBJ_FILES) $(DEP_FILES)

@@ -14,9 +14,14 @@
 
 static const char* hexmap = "0123456789ABCDEF";
 static uint32_t defClr = 0xFF7F00;
+static uint32_t defClr2 = 0xFF7F00;
 
 uint32_t getDefaultRoomColor() {
 	return defClr;
+}
+
+uint32_t getDefaultRoomColor2() {
+	return defClr2;
 }
 
 size_t getUTF8strlen(const std::string& str){
@@ -89,7 +94,8 @@ nlohmann::json server::Room::get_json(std::string _id, bool includeppl){
 				{"chat", chat},
 				{"lobby", lobby},
 				{"crownsolo", crownsolo},
-				{"color", std::string("#")+n2hexstr(color)}
+				{"color", std::string("#")+n2hexstr(color)},
+				{"color2", std::string("#")+n2hexstr(color2)}
 			}}
 		}}
 	};
@@ -217,6 +223,7 @@ void server::Room::set_param(nlohmann::json& j, std::string _id){
 	bool nchat = chat;
 	bool ncrownsolo = crownsolo;
 	uint32_t ncolor = color;
+	uint32_t ncolor2 = color2;
 	if(j["visible"].is_boolean()){
 		nvisible = j["visible"].get<bool>();
 		if(nvisible != visible) updated = true;
@@ -240,8 +247,20 @@ void server::Room::set_param(nlohmann::json& j, std::string _id){
 		}
 		if(ncolor != color) updated = true;
 	}
+	if(j["color2"].is_string()){
+		std::string strcolor2 = j["color2"].get<std::string>();
+		if(strcolor2.size() > 1 && strcolor2[0] == '#'){
+			strcolor2.erase(0, 1);
+			try {
+				ncolor2 = std::stoul(std::string("0x") + strcolor2, nullptr, 16);
+			} catch(const std::invalid_argument&) { return; }
+			  catch(const std::out_of_range&) { return; }
+		}
+		if(ncolor2 != color2) updated = true;
+	}	
 	if(updated){
 		color = ncolor;
+		color2 = ncolor2;
 		visible = nvisible;
 		crownsolo = ncrownsolo;
 		chat = nchat;
@@ -285,17 +304,13 @@ bool server::Room::kick_usr(uWS::WebSocket<uWS::SERVER> * s, mppconn_t& c, std::
 			if(!ids.size()){
 				return true;
 			}
-			/* Client left room, notify.
-			 * Don't send the first if owner changed because we need
-			 * to send the complete room data, and doing this would
-			 * waste some bandwidth.
-			 ***/
 			if(!ownupd){
 				nlohmann::json j = nlohmann::json::array();
 				j[0] = {
 					{"m", "bye"},
 					{"p", id}
 				};
+				std::cout << id << std::endl;
 				this->broadcast(j, s);
 			} else {
 				nlohmann::json j = nlohmann::json::array();
@@ -410,7 +425,7 @@ nlohmann::json server::genusr(uWS::WebSocket<uWS::SERVER> * s){
 		std::string saltedip(ip + "cool salt");
 		unsigned char hash[20];
 		std::string _id(20, '0');
-		std::string name("Anonymoose");
+		std::string name("I don't have a name.");
 		SHA1((unsigned char*)saltedip.c_str(), saltedip.size(), hash);
 		for(uint8_t i = 10; i--;){
 			_id[2 * i] = hexmap[(hash[i] & 0xF0) >> 4];
@@ -443,7 +458,7 @@ void server::run(){
 #ifdef UWS_UDS
 	auto m = umask(7);
 #endif
-	if (!h.listen(path.c_str(), port, uS::TLS::createContext("/etc/letsencrypt/live/ts.terrium.net/fullchain.pem", "/etc/letsencrypt/live/ts.terrium.net/privkey.pem"))) {
+	if (!h.listen(path.c_str(), port, uS::TLS::createContext("C:\\SSL\\ch.pem", "C:\\SSL\\pk.pem"))) {
 		std::cerr << "Can't listen on:" << path << ":" << port << std::endl;
 		return;
 	}
@@ -555,12 +570,18 @@ int main(int argc, char *argv[]){
 			defClr = std::stoull(clr, nullptr, 16);
 			std::cout << "Set default room color to: " << std::hex << defClr << std::dec << std::endl;
 		}
-		if (argc >= 5) addr = argv[4];
+		if (argc >= 5) {
+			std::string clr2(argv[4]);
+			if (clr2[0] == '#') clr2.erase(0, 1);
+			defClr2 = std::stoull(clr2, nullptr, 16);
+			std::cout << "Set default room color2 to: " << std::hex << defClr2 << std::dec << std::endl;
+		}	
+		if (argc >= 6) addr = argv[5];
 
 		server s(addr, port, pass);
 		s.run();
 	} else {
-		std::cout << "Usage: " << argv[0] << " ADMINPASSWORD [PORT {1234}] [DEFAULT_COLOR {FF7F00}] [LISTEN_ADDR]" << std::endl;
+		std::cout << "Usage: " << argv[0] << " ADMINPASSWORD [PORT {1234}] [DEFAULT_COLOR {FF7F00}] [DEFAULT_COLOR2 {FF7F00}] [LISTEN_ADDR]" << std::endl;
 	}
 
 	return 1;
