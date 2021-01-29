@@ -458,7 +458,7 @@ void server::run(){
 #ifdef UWS_UDS
 	auto m = umask(7);
 #endif
-	if (!h.listen(path.c_str(), port, uS::TLS::createContext("C:\\SSL\\ch.pem", "C:\\SSL\\pk.pem"))) {
+	if (!h.listen(path.c_str(), port, uS::TLS::createContext("/var/www/SSL/ch.pem", "/var/www/SSL/pk.pem"))) {
 		std::cerr << "Can't listen on:" << path << ":" << port << std::endl;
 		return;
 	}

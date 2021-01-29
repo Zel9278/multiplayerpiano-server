@@ -1,4 +1,4 @@
-database
-build
-server-bin
-.vscode
+build/*
+server-bin/*
+.vscode/*
+lib/*

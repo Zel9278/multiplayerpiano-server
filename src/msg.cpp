@@ -280,11 +280,7 @@ void server::msg::adminmsg(server* sv, json& j, uWS::WebSocket<uWS::SERVER> * s)
 }
 
 void server::msg::kickban(server* sv, json& j, uWS::WebSocket<uWS::SERVER> * s){
-	auto search = sv->clients.find(*(std::string *) s->getUserData());
-	auto ssearch = sv->rooms.find(search->second.sockets.at(s));
-	if(ssearch == sv->rooms.end()) return;
-	std::string rn = "lobby";
-	ssearch->second->kick_usr(s, search->second, rn);
+	return;
 }
 
 void server::msg::lsl(server* sv, json& j, uWS::WebSocket<uWS::SERVER> * s){
